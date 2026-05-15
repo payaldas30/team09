@@ -671,7 +671,51 @@
   letter-spacing: 1px;
 }
 
-/* ===== FOOTER ===== */   ← paste ABOVE this line
+/* Playlist two-column layout */
+  .playlist-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: 8px;
+  }
+  .spotify-wrap {
+    border: 1px solid rgba(118,185,0,0.2);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(118,185,0,0.08);
+  }
+  .spotify-label {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 2px;
+    color: rgba(29,185,84,0.7); text-transform: uppercase;
+  }
+  .track-story {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 14px 16px 6px 72px;
+    font-size: 0.82rem; color: var(--muted); line-height: 1.75;
+    border-top: 1px solid rgba(118,185,0,0.08);
+    margin-top: 10px;
+  }
+  .track-story em { color: var(--green-bright); font-style: normal; }
+  .track.open {
+    background: rgba(118,185,0,0.05);
+    border-color: rgba(118,185,0,0.25);
+    padding-left: 16px;
+  }
+  .track.open .track-story { display: block; }
+  .track.open .track-num { color: var(--green-bright); }
+  .track.open .track-title { color: var(--green-bright); }
+  .track.open .track-tag {
+    background: var(--green); color: var(--black);
+    border-color: var(--green);
+  }
+  @media (max-width: 900px) {
+    .playlist-layout { grid-template-columns: 1fr; }
+  }
 
   /* ===== FOOTER ===== */
   footer {
@@ -910,98 +954,132 @@
   <div class="section-label">The Mixtape</div>
   <div class="playlist-header">
     <div class="section-title" style="margin-bottom:0">Our <span style="color:var(--green-bright)">Tracks</span></div>
-    <div style="font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:2px">Hover each track for the story</div>
+    <div style="font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:2px">Click a track · read the story</div>
   </div>
-  <div class="track-list reveal">
-    <div class="track">
-      <div class="track-num">01</div>
-      <div class="track-info">
-        <div class="track-title">FIZA</div>
-        <div class="track-artist">Prabh Deep</div>
-        <div class="track-note">The one that set the mood before everything began. <em>FIZA</em> — atmosphere. That's exactly what Bangalore was on Day 1: unfamiliar air, new energy, the feeling of something big on the horizon. This track captured that electric uncertainty perfectly.</div>
+
+  <div class="playlist-layout">
+
+    <!-- LEFT: Spotify embed -->
+    <div class="spotify-col reveal">
+      <div class="spotify-wrap">
+        <iframe
+          src="https://open.spotify.com/embed/playlist/0Y3SHxYGCjD9OvDd8nOl9I?utm_source=generator&theme=0"
+          width="100%" height="600" frameborder="0" allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy" style="border-radius:12px">
+        </iframe>
       </div>
-      <div class="track-tag">Atmosphere</div>
+      <div class="spotify-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Listen on Spotify
+      </div>
     </div>
-    <div class="track">
-      <div class="track-num">02</div>
-      <div class="track-info">
-        <div class="track-title">Counting Stars</div>
-        <div class="track-artist">OneRepublic</div>
-        <div class="track-note">We stopped dreaming small and started counting possibilities. Late nights, ambitious targets, code that broke and got rewritten — but every struggle felt worth it. <em>"Everything that drowns me makes me wanna fly."</em> Exactly that.</div>
+
+    <!-- RIGHT: Track stories -->
+    <div class="tracks-col reveal" style="transition-delay:0.15s">
+      <div class="track-list">
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">01</div>
+          <div class="track-info">
+            <div class="track-title">FIZA</div>
+            <div class="track-artist">Prabh Deep</div>
+          </div>
+          <div class="track-tag">Atmosphere</div>
+          <div class="track-story">The one that set the mood before everything began. <em>FIZA</em> — atmosphere. That's exactly what Bangalore was on Day 1: unfamiliar air, new energy, the feeling of something big on the horizon.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">02</div>
+          <div class="track-info">
+            <div class="track-title">Counting Stars</div>
+            <div class="track-artist">OneRepublic</div>
+          </div>
+          <div class="track-tag">Ambition</div>
+          <div class="track-story">We stopped dreaming small and started counting possibilities. Late nights, ambitious targets, code that broke and got rewritten — but every struggle felt worth it.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">03</div>
+          <div class="track-info">
+            <div class="track-title">Hymn for the Weekend</div>
+            <div class="track-artist">Coldplay</div>
+          </div>
+          <div class="track-tag">Relief</div>
+          <div class="track-story">For the weekends we finally exhaled. After long work weeks, this was the song playing when the team just existed together — no deadlines, no pressure. A hymn for those rare, golden hours.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">04</div>
+          <div class="track-info">
+            <div class="track-title">Together We Stand</div>
+            <div class="track-artist">Ariana Greenblatt</div>
+          </div>
+          <div class="track-tag">Unity</div>
+          <div class="track-story">This one chose itself. <em>Together We Stand</em> — practically the thesis statement of our internship. When someone struggled, the rest stood beside them. Every single time.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">05</div>
+          <div class="track-info">
+            <div class="track-title">Rekka Rekka</div>
+            <div class="track-artist">Nivas K Prasanna, Arivu…</div>
+          </div>
+          <div class="track-tag">Fire</div>
+          <div class="track-story">Raw, fearless, fired up — this track hit like the moment we stopped being cautious and started going all in. Wings out, no looking back.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">06</div>
+          <div class="track-info">
+            <div class="track-title">Believer</div>
+            <div class="track-artist">Imagine Dragons</div>
+          </div>
+          <div class="track-tag">Resilience</div>
+          <div class="track-story">Pain makes you a believer. Every rejected approach, every late debug session — it all fed something bigger. We became believers in ourselves.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">07</div>
+          <div class="track-info">
+            <div class="track-title">Heat Waves</div>
+            <div class="track-artist">Glass Animals</div>
+          </div>
+          <div class="track-tag">Longing</div>
+          <div class="track-story">Bangalore summer is no joke. But this song played during those quiet moments when home felt far. Yet somehow, the team made it feel less far.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">08</div>
+          <div class="track-info">
+            <div class="track-title">Dil Dhadakne Do</div>
+            <div class="track-artist">Joi Barua, Suraj Jagan</div>
+          </div>
+          <div class="track-tag">Freedom</div>
+          <div class="track-story">Let the heart beat. Let it live. A reminder that beyond sprint deadlines, we were young people living a real moment. <em>Dil dhadakne do</em> — let the heart run free.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">09</div>
+          <div class="track-info">
+            <div class="track-title">Aashayein</div>
+            <div class="track-artist">KK, Salim Merchant</div>
+          </div>
+          <div class="track-tag">Hope</div>
+          <div class="track-story">Hopes. Through every uncertain phase, hope was the one thing we carried without question. KK's voice felt like a hand on the shoulder saying: <em>keep going</em>.</div>
+        </div>
+
+        <div class="track" onclick="this.classList.toggle('open')">
+          <div class="track-num">10</div>
+          <div class="track-info">
+            <div class="track-title">Dhruva Dhruva</div>
+            <div class="track-artist">Hiphop Tamizha, Amit Mishra</div>
+          </div>
+          <div class="track-tag">Steadfast</div>
+          <div class="track-story">The closer. Steady as a star — <em>dhruva</em>, the pole star that never moves. After all the chaos and adaptation, this track reminded us: at the core, we stayed true.</div>
+        </div>
+
       </div>
-      <div class="track-tag">Ambition</div>
-    </div>
-    <div class="track">
-      <div class="track-num">03</div>
-      <div class="track-info">
-        <div class="track-title">Hymn for the Weekend</div>
-        <div class="track-artist">Coldplay</div>
-        <div class="track-note">For the weekends we finally exhaled. After long work weeks, this was the song playing when the team just existed together — no deadlines, no pressure. A hymn for those rare, golden hours of just being.</div>
-      </div>
-      <div class="track-tag">Relief</div>
-    </div>
-    <div class="track">
-      <div class="track-num">04</div>
-      <div class="track-info">
-        <div class="track-title">Together We Stand</div>
-        <div class="track-artist">Ariana Greenblatt</div>
-        <div class="track-note">This one chose itself. <em>Together We Stand</em> — it's practically the thesis statement of our internship. When someone struggled, the rest stood beside them. Every single time. No exceptions.</div>
-      </div>
-      <div class="track-tag">Unity</div>
-    </div>
-    <div class="track">
-      <div class="track-num">05</div>
-      <div class="track-info">
-        <div class="track-title">Rekka Rekka</div>
-        <div class="track-artist">Nivas K Prasanna, Arivu, Vedan…</div>
-        <div class="track-note">A nod to the South India energy that was impossible to miss in Bangalore. Raw, fearless, fired up — this track hit like the moment we stopped being cautious and started going all in. Rekka Rekka: wings out, no looking back.</div>
-      </div>
-      <div class="track-tag">Fire</div>
-    </div>
-    <div class="track">
-      <div class="track-num">06</div>
-      <div class="track-info">
-        <div class="track-title">Believer</div>
-        <div class="track-artist">Imagine Dragons</div>
-        <div class="track-note">Pain makes you a believer. Every rejected approach, every late debug session, every moment of self-doubt — it all fed something bigger. <em>"First things first, I'ma say all the words inside my head."</em> We became believers in ourselves.</div>
-      </div>
-      <div class="track-tag">Resilience</div>
-    </div>
-    <div class="track">
-      <div class="track-num">07</div>
-      <div class="track-info">
-        <div class="track-title">Heat Waves</div>
-        <div class="track-artist">Glass Animals</div>
-        <div class="track-note">Bangalore summer is no joke. But beyond the literal heat — this song is about missing something, longing for something. It played during those quiet moments when home felt far. Yet somehow, the team made it feel less far.</div>
-      </div>
-      <div class="track-tag">Longing</div>
-    </div>
-    <div class="track">
-      <div class="track-num">08</div>
-      <div class="track-info">
-        <div class="track-title">Dil Dhadakne Do</div>
-        <div class="track-artist">Joi Barua, Suraj Jagan</div>
-        <div class="track-note">Let the heart beat. Let it live. This track was a reminder that beyond performance reviews and sprint deadlines, we were young people living a real moment. <em>Dil dhadakne do</em> — let the heart run free.</div>
-      </div>
-      <div class="track-tag">Freedom</div>
-    </div>
-    <div class="track">
-      <div class="track-num">09</div>
-      <div class="track-info">
-        <div class="track-title">Aashayein</div>
-        <div class="track-artist">KK, Salim Merchant</div>
-        <div class="track-note">Hopes. That's the translation, and that's the truth. Through every uncertain phase, hope was the one thing we carried without question. KK's voice on this track felt like a hand on the shoulder saying: <em>keep going</em>.</div>
-      </div>
-      <div class="track-tag">Hope</div>
-    </div>
-    <div class="track">
-      <div class="track-num">10</div>
-      <div class="track-info">
-        <div class="track-title">Dhruva Dhruva</div>
-        <div class="track-artist">Hiphop Tamizha, Amit Mishra</div>
-        <div class="track-note">The closer. Steady as a star — <em>dhruva</em>, the pole star that doesn't move. After all the chaos, all the change, all the adaptation, this track reminded us: at the core, we stayed true. We adapted without losing ourselves.</div>
-      </div>
-      <div class="track-tag">Steadfast</div>
     </div>
   </div>
 </section>
