@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Together, We Adapt — NVIDIA Intern Mixtape</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #76b900;
+    --green-bright: #a8ff00;
+    --green-glow: #4a7a00;
+    --black: #050505;
+    --dark: #0a0a0a;
+    --dark2: #111;
+    --gray: #1a1a1a;
+    --text: #e8e8e8;
+    --muted: #666;
+    --accent: #c8ff00;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: exclusion;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--green);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: all 0.3s ease;
+    mix-blend-mode: exclusion;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 48px;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 2px;
+    color: var(--green-bright);
+  }
+  .nav-logo .dot {
+    width: 8px; height: 8px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.3s;
+    font-family: 'Space Mono', monospace;
+  }
+  .nav-links a:hover { color: var(--green-bright); }
+
+  /* ===== HERO ===== */
+  #hero {
+    height: 100vh; position: relative;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(118,185,0,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 20% 80%, rgba(118,185,0,0.06) 0%, transparent 60%);
+  }
+
+  /* Animated grid lines */
+  .grid-lines {
+    position: absolute; inset: 0; opacity: 0.06;
+    background-image:
+      linear-gradient(to right, var(--green) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--green) 1px, transparent 1px);
+    background-size: 80px 80px;
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift {
+    from { background-position: 0 0; }
+    to { background-position: 80px 80px; }
+  }
+
+  /* Particles */
+  .particles { position: absolute; inset: 0; overflow: hidden; }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    animation: float linear infinite;
+    opacity: 0;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-20px) translateX(60px); opacity: 0; }
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 80px;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 4px;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: -1px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .line2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--green-bright);
+    text-shadow: 0 0 60px rgba(168,255,0,0.3);
+  }
+  .hero-title .line3 {
+    display: block;
+    color: var(--green-bright);
+    text-shadow: 0 0 80px rgba(168,255,0,0.4);
+  }
+
+  .hero-tagline {
+    font-size: 1.1rem; font-weight: 400; color: var(--muted);
+    max-width: 420px; line-height: 1.7;
+    border-left: 2px solid var(--green);
+    padding-left: 20px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .hero-tagline em { color: var(--text); font-style: normal; font-weight: 600; }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 80px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeUp 1s 1.2s forwards;
+  }
+  .scroll-line {
+    width: 40px; height: 1px; background: var(--green);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { width: 40px; }
+    50% { width: 70px; }
+  }
+
+  /* Big rotating text ring */
+  .hero-ring {
+    position: absolute; right: -80px; top: 50%;
+    transform: translateY(-50%);
+    width: 480px; height: 480px;
+    opacity: 0.15;
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin { from { transform: translateY(-50%) rotate(0deg); } to { transform: translateY(-50%) rotate(360deg); } }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SECTION BASE ===== */
+  section { padding: 120px 80px; position: relative; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 5px; color: var(--green);
+    text-transform: uppercase; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: ''; display: block;
+    width: 32px; height: 1px; background: var(--green);
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1; margin-bottom: 48px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Reveal animation */
+  .reveal {
+    opacity: 0; transform: translateY(50px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ===== VIDEO SECTION ===== */
+  #journey {
+    background: var(--dark);
+    border-top: 1px solid rgba(118,185,0,0.15);
+  }
+  .journey-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+  .video-frame {
+    position: relative; aspect-ratio: 16/9;
+    background: var(--gray);
+    border: 1px solid rgba(118,185,0,0.2);
+    border-radius: 4px; overflow: hidden;
+  }
+  .video-frame iframe {
+    width: 100%; height: 100%; border: none;
+  }
+  .video-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; color: var(--muted);
+    background: linear-gradient(135deg, #0f1a00 0%, #0a0a0a 100%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 2px;
+  }
+  .play-btn {
+    width: 64px; height: 64px;
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .play-btn:hover {
+    background: var(--green);
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(118,185,0,0.5);
+  }
+  .play-btn svg { fill: var(--green); transition: fill 0.3s; }
+  .play-btn:hover svg { fill: var(--black); }
+
+  .journey-text p {
+    color: var(--muted); line-height: 1.9; margin-bottom: 20px;
+    font-size: 0.95rem;
+  }
+  .journey-text p em { color: var(--green-bright); font-style: normal; font-weight: 600; }
+
+  .stat-row {
+    display: flex; gap: 32px; margin-top: 40px;
+  }
+  .stat {
+    border-top: 1px solid rgba(118,185,0,0.3);
+    padding-top: 16px;
+  }
+  .stat .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem; color: var(--green-bright);
+    line-height: 1;
+  }
+  .stat .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ===== STORY SECTION ===== */
+  #story {
+    background: var(--black);
+    overflow: hidden;
+  }
+  .story-inner {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 80px;
+  }
+  .story-sidebar {
+    position: sticky; top: 120px;
+    align-self: start;
+  }
+  .story-blocks { display: flex; flex-direction: column; gap: 48px; }
+  .story-block {
+    padding: 40px;
+    border: 1px solid rgba(118,185,0,0.1);
+    border-left: 3px solid var(--green);
+    background: rgba(118,185,0,0.02);
+    transition: all 0.4s;
+    border-radius: 2px;
+  }
+  .story-block:hover {
+    background: rgba(118,185,0,0.06);
+    border-color: var(--green-bright);
+    transform: translateX(8px);
+  }
+  .story-block h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem; color: var(--green-bright);
+    margin-bottom: 16px; letter-spacing: 1px;
+  }
+  .story-block p {
+    color: var(--muted); line-height: 1.85; font-size: 0.9rem;
+  }
+  .block-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem; color: rgba(118,185,0,0.1);
+    line-height: 1; margin-bottom: 8px;
+  }
+
+  /* ===== POSTER SECTION ===== */
+  #poster {
+    background: var(--dark);
+    border-top: 1px solid rgba(118,185,0,0.15);
+  }
+  .poster-layout {
+    display: grid; grid-template-columns: 1.2fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .poster-wrapper {
+    position: relative;
+    cursor: zoom-in;
+  }
+  .poster-wrapper img {
+    width: 100%;
+    border: 1px solid rgba(118,185,0,0.2);
+    border-radius: 4px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    display: block;
+  }
+  .poster-wrapper:hover img {
+    transform: scale(1.02);
+    box-shadow: 0 0 60px rgba(118,185,0,0.2), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .poster-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(5,5,5,0.6) 0%, transparent 50%);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .poster-zoom-hint {
+    position: absolute; bottom: 16px; right: 16px;
+    background: rgba(118,185,0,0.9);
+    color: var(--black);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 2px;
+    padding: 6px 12px; border-radius: 2px;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+  }
+  .poster-wrapper:hover .poster-zoom-hint { opacity: 0; }
+
+  .poster-info h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem; color: var(--green-bright);
+    margin-bottom: 24px;
+  }
+  .symbol-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+  .symbol-list li {
+    display: flex; gap: 16px;
+    padding: 16px;
+    border: 1px solid rgba(118,185,0,0.1);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .symbol-list li:hover {
+    border-color: var(--green);
+    background: rgba(118,185,0,0.04);
+  }
+  .sym-icon {
+    font-size: 1.4rem; flex-shrink: 0;
+    width: 40px; text-align: center;
+  }
+  .sym-text strong {
+    display: block; font-size: 0.85rem;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .sym-text span {
+    font-size: 0.8rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.95);
+    align-items: center; justify-content: center;
+    padding: 40px;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img {
+    max-height: 90vh; max-width: 90vw;
+    border: 1px solid rgba(118,185,0,0.3);
+    border-radius: 4px;
+  }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: 1px solid var(--green);
+    color: var(--green); font-family: 'Space Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 2px;
+    padding: 8px 16px; cursor: pointer;
+    transition: all 0.3s; text-transform: uppercase;
+  }
+  .lightbox-close:hover { background: var(--green); color: var(--black); }
+
+  /* ===== PLAYLIST SECTION ===== */
+  #playlist {
+    background: var(--black);
+  }
+  .playlist-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-bottom: 48px;
+  }
+  .track-list { display: flex; flex-direction: column; gap: 0; }
+  .track {
+    display: grid; grid-template-columns: 48px 1fr auto;
+    align-items: center; gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+  .track::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background: rgba(118,185,0,0.03);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .track:hover::before { transform: scaleX(1); }
+  .track:hover { padding-left: 16px; }
+
+  .track-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem; color: rgba(118,185,0,0.2);
+    text-align: center; transition: color 0.3s;
+  }
+  .track:hover .track-num { color: var(--green-bright); }
+
+  .track-info { position: relative; }
+  .track-title {
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+    transition: color 0.3s;
+  }
+  .track:hover .track-title { color: var(--green-bright); }
+  .track-artist {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem; color: var(--muted); letter-spacing: 1px;
+  }
+  .track-note {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--gray);
+    border: 1px solid rgba(118,185,0,0.2);
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+    z-index: 10;
+    opacity: 0; pointer-events: none;
+    transform: translateY(8px);
+    transition: all 0.3s;
+  }
+  .track:hover .track-note {
+    opacity: 1; pointer-events: auto;
+    transform: translateY(4px);
+  }
+  .track-note em { color: var(--green-bright); font-style: normal; }
+  .track-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 2px;
+    padding: 4px 12px;
+    border: 1px solid rgba(118,185,0,0.3);
+    color: var(--green); border-radius: 2px;
+    text-transform: uppercase; white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .track:hover .track-tag {
+    background: var(--green); color: var(--black);
+    border-color: var(--green);
+  }
+
+  /* ===== QUOTES SECTION ===== */
+  #quotes {
+    background: var(--dark);
+    border-top: 1px solid rgba(118,185,0,0.15);
+    overflow: hidden;
+  }
+  .quotes-ticker {
+    display: flex; gap: 60px;
+    animation: ticker 25s linear infinite;
+    white-space: nowrap; margin-bottom: 80px;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem; color: rgba(118,185,0,0.15);
+    letter-spacing: 3px; flex-shrink: 0;
+  }
+  .ticker-item span { color: rgba(118,185,0,0.4); }
+
+  .quotes-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .quote-card {
+    padding: 36px;
+    border: 1px solid rgba(118,185,0,0.1);
+    border-radius: 4px;
+    position: relative;
+    background: rgba(118,185,0,0.02);
+    transition: all 0.4s;
+    cursor: default;
+  }
+  .quote-card:hover {
+    border-color: rgba(118,185,0,0.4);
+    background: rgba(118,185,0,0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(118,185,0,0.08);
+  }
+  .quote-mark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem; color: rgba(118,185,0,0.12);
+    line-height: 0.8; margin-bottom: 8px;
+  }
+  .quote-text {
+    font-size: 0.9rem; line-height: 1.85; color: var(--muted);
+    margin-bottom: 24px; font-style: italic;
+  }
+  .quote-author {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 2px;
+    color: var(--green); text-transform: uppercase;
+  }
+  .quote-role {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: rgba(118,185,0,0.4);
+    letter-spacing: 1px;
+  }
+
+  /* ===== CLOSING SECTION ===== */
+  #closing {
+    background: var(--black);
+    text-align: center; padding: 160px 80px;
+    position: relative; overflow: hidden;
+  }
+  .closing-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(118,185,0,0.1) 0%, transparent 70%);
+    animation: closingPulse 4s ease-in-out infinite;
+  }
+  @keyframes closingPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  .closing-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+  .closing-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 5px;
+    color: var(--green); text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .closing-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95; margin-bottom: 48px;
+  }
+  .closing-title .highlight {
+    display: block; color: var(--green-bright);
+    text-shadow: 0 0 80px rgba(168,255,0,0.4);
+  }
+  .closing-message {
+    font-size: 1rem; color: var(--muted); line-height: 1.9;
+    margin-bottom: 60px; font-weight: 400;
+  }
+  .closing-message strong { color: var(--text); font-weight: 600; }
+
+  .final-line {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    color: var(--green-bright);
+    letter-spacing: 3px;
+    padding: 32px 48px;
+    border: 1px solid rgba(118,185,0,0.3);
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+  .final-line::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--green);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: 0;
+  }
+  .final-line:hover::before { transform: scaleX(1); }
+  .final-line:hover { color: var(--black); box-shadow: 0 0 60px rgba(118,185,0,0.4); }
+  .final-line span { position: relative; z-index: 1; }
+
+  .team-tag {
+    margin-top: 80px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 4px;
+    color: rgba(118,185,0,0.3); text-transform: uppercase;
+  }
+
+  /* Member photo in quote card */
+.member-photo-wrap {
+  width: 175px; height: 175px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  border: 2px solid rgba(118,185,0,0.35);
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.quote-card:hover .member-photo-wrap {
+  border-color: var(--green-bright);
+  box-shadow: 0 0 16px rgba(118,185,0,0.3);
+}
+.member-photo {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+.member-photo-fallback {
+  display: none;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(118,185,0,0.2), rgba(118,185,0,0.05));
+  align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; color: var(--green);
+  letter-spacing: 1px;
+}
+
+/* ===== FOOTER ===== */   ← paste ABOVE this line
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 80px;
+    border-top: 1px solid rgba(118,185,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--dark);
+  }
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem; letter-spacing: 3px;
+    color: rgba(118,185,0,0.4);
+  }
+  .footer-credit {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase;
+  }
+
+  /* Divider */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--green), transparent);
+    margin: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    section { padding: 80px 24px; }
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero-content { padding: 0 24px; }
+    .hero-scroll { left: 24px; }
+    .journey-grid, .story-inner, .poster-layout { grid-template-columns: 1fr; }
+    .quotes-grid { grid-template-columns: 1fr; }
+    .stat-row { flex-wrap: wrap; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">
+    <div class="dot"></div>
+    NVIDIA × Team 9
+  </div>
+  <ul class="nav-links">
+    <li><a href="#journey">Journey</a></li>
+    <li><a href="#story">Story</a></li>
+    <li><a href="#poster">Poster</a></li>
+    <li><a href="#playlist">Playlist</a></li>
+    <li><a href="#quotes">Team</a></li>
+    <li><a href="#closing">Closing</a></li>
+  </ul>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Rotating ring SVG -->
+  <svg class="hero-ring" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="190" stroke="#76b900" stroke-width="1" stroke-dasharray="8 16"/>
+    <circle cx="200" cy="200" r="150" stroke="#76b900" stroke-width="0.5" stroke-dasharray="4 20"/>
+  </svg>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">NVIDIA Intern Mixtape · Team 9 · Bangalore 2025</p>
+    <h1 class="hero-title">
+      <span class="line1">Together,</span>
+      <span class="line2">We</span>
+      <span class="line3">Adapt.</span>
+    </h1>
+    <p class="hero-tagline">
+      <em>Bring your best.</em> The rest will follow.<br>
+      From different colleges. Different states. One team.
+    </p>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== JOURNEY ===== -->
+<section id="journey">
+  <div class="section-label">Our Journey</div>
+  <div class="journey-grid">
+    <div class="reveal">
+         <div class="poster-wrapper reveal" onclick="document.getElementById('lightbox').classList.toggle('active')">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778822300/1_NV_stw7o2.jpg" alt="Together We Adapt Poster" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22><rect width=%22600%22 height=%22600%22 fill=%22%230a0a0a%22/><text x=%22300%22 y=%22300%22 text-anchor=%22middle%22 fill=%22%2376b900%22 font-size=%2224%22 font-family=%22monospace%22>POSTER — Team 9</text></svg>'">
+        <div class="poster-overlay"></div>
+          <span>Our Journey — Team 9</span>
+        </div>
+    </div>
+    <div class="journey-text reveal" style="transition-delay:0.2s">
+      <div class="section-title">How We <span style="color:var(--green-bright)">Evolved</span></div>
+      <p>We arrived as <em>strangers</em> — different accents, different backgrounds, different dreams. Some of us had never left our home states. Some had never worked in tech.</p>
+      <p>Then NVIDIA Bangalore happened. The deadlines were real. The problems were hard. And adaptation wasn't optional — it was <em>survival</em>.</p>
+      <p>Through late nights, failed builds, failed ideas, and unexpected breakthroughs, we discovered something more powerful than any single skill: <em>collective resilience</em>.</p>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="num">10</div>
+          <div class="label">Team Members</div>
+        </div>
+        <!-- <div class="stat">
+          <div class="num">10+</div>
+          <div class="label">States Represented</div>
+        </div> -->
+        <div class="stat">
+          <div class="num">∞</div>
+          <div class="label">Lessons Learned</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== STORY ===== -->
+<section id="story">
+  <div class="story-inner">
+    <div class="story-sidebar reveal">
+      <div class="section-label">The Theme</div>
+      <div class="section-title">Why<br><span style="color:var(--green-bright)">This<br>Song?</span></div>
+      <p style="color:var(--muted);font-size:0.88rem;line-height:1.85;margin-top:24px">"Together, We Adapt" isn't just a title. It's the equation that carried us through — from orientation day to demo day.</p>
+    </div>
+    <div class="story-blocks">
+      <div class="story-block reveal">
+        <div class="block-num">01</div>
+        <h3>Why We Chose This Theme</h3>
+        <p>Every one of us landed in Bangalore carrying assumptions — about how work would feel, how a team functions, how quickly things should move. Those assumptions got challenged on Day 1. "Together, We Adapt" captured the only honest truth about our internship: <em>nothing went to plan, and everything worked out</em>.</p>
+      </div>
+      <div class="story-block reveal" style="transition-delay:0.15s">
+        <div class="block-num">02</div>
+        <h3>Teamwork × Diverse Perspectives</h3>
+        <p>With nine people from different engineering streams, different cities, different cultural backgrounds — disagreement was inevitable. But so was complementarity. The person who saw the bug was never the person who introduced it. Our diversity wasn't a challenge to manage. It was our greatest debugging tool.</p>
+      </div>
+      <div class="story-block reveal" style="transition-delay:0.3s">
+        <div class="block-num">03</div>
+        <h3>Overcoming the Environment</h3>
+        <p>New city. New tools. New expectations. The first few weeks were a crash course in humility. We learned to ask for help without embarrassment, to admit uncertainty without shame, and to find stability in each other when the environment felt overwhelming. Adaptation isn't weakness — it's engineering.</p>
+      </div>
+      <div class="story-block reveal" style="transition-delay:0.45s">
+        <div class="block-num">04</div>
+        <h3>The Mindset Shift</h3>
+        <p>We stopped asking "am I capable enough?" and started asking "how do we figure this out together?" That shift — from individual performance anxiety to collective problem-solving — was the most important thing we built all summer. Not the code. Not the demos. This.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== POSTER ===== -->
+<section id="poster">
+  <div class="section-label">Our Poster</div>
+  <div class="poster-layout">
+    <div class="poster-wrapper reveal" onclick="document.getElementById('lightbox').classList.toggle('active')">
+      <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778822447/WhatsApp_Image_2026-05-15_at_9.07.42_AM_kfj18a.jpg" alt="Together We Adapt Poster" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22><rect width=%22600%22 height=%22600%22 fill=%22%230a0a0a%22/><text x=%22300%22 y=%22300%22 text-anchor=%22middle%22 fill=%22%2376b900%22 font-size=%2224%22 font-family=%22monospace%22>POSTER — Team 9</text></svg>'">
+      <div class="poster-overlay"></div>
+      <div class="poster-zoom-hint">Click to Zoom</div>
+    </div>
+    <div class="poster-info reveal" style="transition-delay:0.2s">
+      <h3>Symbolism Behind the Design</h3>
+      <ul class="symbol-list">
+        <li>
+          <div class="sym-icon"></div>
+          <div class="sym-text">
+            <strong>Map of India</strong>
+            <span>Represents the diverse origins of each team member — every arrow points back to Bangalore, our shared ground.</span>
+          </div>
+        </li>
+        <li>
+          <div class="sym-icon"></div>
+          <div class="sym-text">
+            <strong>Circle of People</strong>
+            <span>The ring of figures holding hands symbolizes unity built across differences — nine individuals, one team.</span>
+          </div>
+        </li>
+        <li>
+          <div class="sym-icon"></div>
+          <div class="sym-text">
+            <strong>NVIDIA Green × Circuit Texture</strong>
+            <span>The tech aesthetic nods to NVIDIA's DNA — precision, performance, and innovation as our backdrop.</span>
+          </div>
+        </li>
+        <li>
+          <div class="sym-icon"></div>
+          <div class="sym-text">
+            <strong>Sun & Moon</strong>
+            <span>The long hours — early mornings and late nights — that defined our most productive, formative weeks.</span>
+          </div>
+        </li>
+        <li>
+          <div class="sym-icon"></div>
+          <div class="sym-text">
+            <strong>Barcode + Record Label</strong>
+            <span>The mixtape framing: our story packaged as a collector's record, pressed and permanent.</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
+  <button class="lightbox-close">ESC / Close</button>
+  <img src="../uploads/1778821031219_image.png" alt="Together We Adapt Poster" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22><rect width=%22600%22 height=%22600%22 fill=%22%230a0a0a%22/><text x=%22300%22 y=%22300%22 text-anchor=%22middle%22 fill=%22%2376b900%22 font-size=%2224%22 font-family=%22monospace%22>POSTER</text></svg>'">
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== PLAYLIST ===== -->
+<section id="playlist">
+  <div class="section-label">The Mixtape</div>
+  <div class="playlist-header">
+    <div class="section-title" style="margin-bottom:0">Our <span style="color:var(--green-bright)">Tracks</span></div>
+    <div style="font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:2px">Hover each track for the story</div>
+  </div>
+  <div class="track-list reveal">
+    <div class="track">
+      <div class="track-num">01</div>
+      <div class="track-info">
+        <div class="track-title">FIZA</div>
+        <div class="track-artist">Prabh Deep</div>
+        <div class="track-note">The one that set the mood before everything began. <em>FIZA</em> — atmosphere. That's exactly what Bangalore was on Day 1: unfamiliar air, new energy, the feeling of something big on the horizon. This track captured that electric uncertainty perfectly.</div>
+      </div>
+      <div class="track-tag">Atmosphere</div>
+    </div>
+    <div class="track">
+      <div class="track-num">02</div>
+      <div class="track-info">
+        <div class="track-title">Counting Stars</div>
+        <div class="track-artist">OneRepublic</div>
+        <div class="track-note">We stopped dreaming small and started counting possibilities. Late nights, ambitious targets, code that broke and got rewritten — but every struggle felt worth it. <em>"Everything that drowns me makes me wanna fly."</em> Exactly that.</div>
+      </div>
+      <div class="track-tag">Ambition</div>
+    </div>
+    <div class="track">
+      <div class="track-num">03</div>
+      <div class="track-info">
+        <div class="track-title">Hymn for the Weekend</div>
+        <div class="track-artist">Coldplay</div>
+        <div class="track-note">For the weekends we finally exhaled. After long work weeks, this was the song playing when the team just existed together — no deadlines, no pressure. A hymn for those rare, golden hours of just being.</div>
+      </div>
+      <div class="track-tag">Relief</div>
+    </div>
+    <div class="track">
+      <div class="track-num">04</div>
+      <div class="track-info">
+        <div class="track-title">Together We Stand</div>
+        <div class="track-artist">Ariana Greenblatt</div>
+        <div class="track-note">This one chose itself. <em>Together We Stand</em> — it's practically the thesis statement of our internship. When someone struggled, the rest stood beside them. Every single time. No exceptions.</div>
+      </div>
+      <div class="track-tag">Unity</div>
+    </div>
+    <div class="track">
+      <div class="track-num">05</div>
+      <div class="track-info">
+        <div class="track-title">Rekka Rekka</div>
+        <div class="track-artist">Nivas K Prasanna, Arivu, Vedan…</div>
+        <div class="track-note">A nod to the South India energy that was impossible to miss in Bangalore. Raw, fearless, fired up — this track hit like the moment we stopped being cautious and started going all in. Rekka Rekka: wings out, no looking back.</div>
+      </div>
+      <div class="track-tag">Fire</div>
+    </div>
+    <div class="track">
+      <div class="track-num">06</div>
+      <div class="track-info">
+        <div class="track-title">Believer</div>
+        <div class="track-artist">Imagine Dragons</div>
+        <div class="track-note">Pain makes you a believer. Every rejected approach, every late debug session, every moment of self-doubt — it all fed something bigger. <em>"First things first, I'ma say all the words inside my head."</em> We became believers in ourselves.</div>
+      </div>
+      <div class="track-tag">Resilience</div>
+    </div>
+    <div class="track">
+      <div class="track-num">07</div>
+      <div class="track-info">
+        <div class="track-title">Heat Waves</div>
+        <div class="track-artist">Glass Animals</div>
+        <div class="track-note">Bangalore summer is no joke. But beyond the literal heat — this song is about missing something, longing for something. It played during those quiet moments when home felt far. Yet somehow, the team made it feel less far.</div>
+      </div>
+      <div class="track-tag">Longing</div>
+    </div>
+    <div class="track">
+      <div class="track-num">08</div>
+      <div class="track-info">
+        <div class="track-title">Dil Dhadakne Do</div>
+        <div class="track-artist">Joi Barua, Suraj Jagan</div>
+        <div class="track-note">Let the heart beat. Let it live. This track was a reminder that beyond performance reviews and sprint deadlines, we were young people living a real moment. <em>Dil dhadakne do</em> — let the heart run free.</div>
+      </div>
+      <div class="track-tag">Freedom</div>
+    </div>
+    <div class="track">
+      <div class="track-num">09</div>
+      <div class="track-info">
+        <div class="track-title">Aashayein</div>
+        <div class="track-artist">KK, Salim Merchant</div>
+        <div class="track-note">Hopes. That's the translation, and that's the truth. Through every uncertain phase, hope was the one thing we carried without question. KK's voice on this track felt like a hand on the shoulder saying: <em>keep going</em>.</div>
+      </div>
+      <div class="track-tag">Hope</div>
+    </div>
+    <div class="track">
+      <div class="track-num">10</div>
+      <div class="track-info">
+        <div class="track-title">Dhruva Dhruva</div>
+        <div class="track-artist">Hiphop Tamizha, Amit Mishra</div>
+        <div class="track-note">The closer. Steady as a star — <em>dhruva</em>, the pole star that doesn't move. After all the chaos, all the change, all the adaptation, this track reminded us: at the core, we stayed true. We adapted without losing ourselves.</div>
+      </div>
+      <div class="track-tag">Steadfast</div>
+    </div>
+  </div>
+</section>
+ 
+<div class="divider"></div>
+
+<!-- ===== QUOTES ===== -->
+<section id="quotes">
+  <!-- Ticker -->
+  <div style="overflow:hidden;margin-bottom:80px">
+    <div class="quotes-ticker" id="ticker">
+      <span class="ticker-item">TOGETHER <span>✦</span></span>
+      <span class="ticker-item">WE ADAPT <span>✦</span></span>
+      <span class="ticker-item">NVIDIA <span>✦</span></span>
+      <span class="ticker-item">TEAM 9 <span>✦</span></span>
+      <span class="ticker-item">BANGALORE <span>✦</span></span>
+      <span class="ticker-item">2025 <span>✦</span></span>
+      <span class="ticker-item">TOGETHER <span>✦</span></span>
+      <span class="ticker-item">WE ADAPT <span>✦</span></span>
+      <span class="ticker-item">NVIDIA <span>✦</span></span>
+      <span class="ticker-item">TEAM 9 <span>✦</span></span>
+      <span class="ticker-item">BANGALORE <span>✦</span></span>
+      <span class="ticker-item">2025 <span>✦</span></span>
+    </div>
+  </div>
+ 
+  <div class="section-label">Team Voices</div>
+  <div class="section-title" style="margin-bottom:48px">Words From <span style="color:var(--green-bright)">The Team</span></div>
+ 
+  <div class="quotes-grid">
+ 
+    <!-- MEMBER 1 — replace src, quote, name, role -->
+    <div class="quote-card reveal" style="transition-delay:0.00s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824586/WhatsApp_Image_2026-05-15_at_11.26.09_AM_l4xffw.jpg" alt="Member 1" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">01</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Built by experiences, refined by mistakes.</p>
+      <div class="quote-author">Payal Das</div>
+      <div class="quote-role">ASIC Intern - Bangalore  · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 2 -->
+    <div class="quote-card reveal" style="transition-delay:0.08s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778823766/WhatsApp_Image_2026-05-15_at_11.11.19_AM_dwesvn.jpg" alt="Member 2" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">02</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Making mistakes, Learning from them.</p>
+      <div class="quote-author">Deenank Sharma</div>
+      <div class="quote-role">ASIC Intern - Bangalore · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 3 -->
+    <div class="quote-card reveal" style="transition-delay:0.16s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778823929/WhatsApp_Image_2026-05-15_at_11.14.36_AM_jixptu.jpg" alt="Member 3" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">03</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Curious, never quits, sleep deprived</p>
+      <div class="quote-author">Radha Rungta</div>
+      <div class="quote-role">System software intern at Nvidia Bengaluru  · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 4 -->
+    <div class="quote-card reveal" style="transition-delay:0.24s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824047/WhatsApp_Image_2026-05-15_at_11.08.39_AM_lkkvgd.jpg" alt="Member 4" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">04</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Exploring Technology,Active, Creative.</p>
+      <div class="quote-author">Surya Harshith Balla </div>
+      <div class="quote-role">System software engineer - Bangalore · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 5 -->
+    <div class="quote-card reveal" style="transition-delay:0.32s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824146/WhatsApp_Image_2026-05-15_at_11.07.14_AM_swzdaq.jpg" alt="Member 5" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">05</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Silicon Mind, Senthamizh Soul.</p>
+      <div class="quote-author">Sundara Valliappan A</div>
+      <div class="quote-role">ASIC intern, Banglore · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 6 -->
+    <div class="quote-card reveal" style="transition-delay:0.40s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824268/WhatsApp_Image_2026-05-15_at_11.00.37_AM_bjvlpa.jpg" alt="Member 6" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">06</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Runs on caffeine , pressure and questionable cooling.</p>
+      <div class="quote-author">Aniket Goyal </div>
+      <div class="quote-role">ASIC Intern - Bangalore  · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 7 -->
+    <div class="quote-card reveal" style="transition-delay:0.08s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824416/WhatsApp_Image_2026-05-15_at_11.22.22_AM_xupmv5.jpg" alt="Member 7" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">07</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Vibes on, stress off .</p>
+      <div class="quote-author">Kunal Sanghvi</div>
+      <div class="quote-role">ASIC Intern - Bangalore  · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 8 -->
+    <div class="quote-card reveal" style="transition-delay:0.16s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778824467/WhatsApp_Image_2026-05-15_at_10.59.48_AM_w65pda.jpg" alt="Member 8" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">08</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Lzy, Creative and Resilient.</p>
+      <div class="quote-author">Shrinivas Basanagouda Malipatil</div>
+      <div class="quote-role">ASIC Intern - Bangalore  · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 9 -->
+    <div class="quote-card reveal" style="transition-delay:0.24s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778825159/WhatsApp_Image_2026-05-15_at_11.35.34_AM_klmemn.jpg" alt="Member 9" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">09</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Not afraid of mistakes — they’re proof that I dare to grow.</p>
+      <div class="quote-author">E VRISHABHANATH </div>
+      <div class="quote-role">System software engineer - Bangalore · Team 9</div>
+    </div>
+ 
+    <!-- MEMBER 10 -->
+    <div class="quote-card reveal" style="transition-delay:0.32s">
+      <div class="member-photo-wrap">
+        <img src="https://res.cloudinary.com/dg3qhhnjo/image/upload/v1778825251/WhatsApp_Image_2026-05-15_at_11.36.57_AM_awmeb2.jpg" alt="Member 10" class="member-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-fallback">10</div>
+      </div>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">More caffeine than cortisol.</p>
+      <div class="quote-author">Kumar Yash</div>
+      <div class="quote-role">ASIC Intern - Bangalore  · Team 9</div>
+    </div>
+ 
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== CLOSING ===== -->
+<section id="closing">
+  <div class="closing-bg"></div>
+  <div class="closing-inner">
+    <p class="closing-label">— Final Note —</p>
+    <h2 class="closing-title">
+      Success Is Not<br>
+      <span class="highlight">Constant Performance.</span>
+      <br>It's the Ability To<br>
+      <span class="highlight">Adapt. Together.</span>
+    </h2>
+    <p class="closing-message">
+      We came from different colleges, different states, with different goals and different fears. We were dropped into a city that didn't know our names, into a company setting the pace of the world, and into a team of strangers.<br><br>
+      <strong>And we didn't break. We adapted.</strong><br><br>
+      Not because we were exceptional to begin with — but because we chose each other. Every single day.
+    </p>
+    <div class="final-line">
+      <span>We didn't just perform. We adapted. Together.</span>
+    </div>
+    <p class="team-tag">NVIDIA Records · Team 9 · Artists — Interns · Bangalore 2025</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">Together, We Adapt</div>
+  <div class="footer-credit">NVIDIA Intern Mixtape · Team 9 · Bangalore 2025</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX - 6 + 'px';
+    cursor.style.top = mouseY - 6 + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 18) * 0.12;
+    ringY += (mouseY - ringY - 18) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .track, .poster-wrapper, .quote-card, .story-block').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'scale(2)';
+      ring.style.transform = 'scale(1.5)';
+      ring.style.borderColor = 'var(--green-bright)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'scale(1)';
+      ring.style.transform = 'scale(1)';
+      ring.style.borderColor = 'var(--green)';
+    });
+  });
+
+  // Particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 15) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (1 + Math.random() * 3) + 'px';
+    container.appendChild(p);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Keyboard close for lightbox
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
+  });
+
+  // Track clicks — expand/collapse note on mobile
+  document.querySelectorAll('.track').forEach(track => {
+    track.addEventListener('click', () => {
+      const note = track.querySelector('.track-note');
+      if (window.innerWidth < 768) {
+        note.style.opacity = note.style.opacity === '1' ? '0' : '1';
+        note.style.pointerEvents = note.style.opacity === '1' ? 'auto' : 'none';
+      }
+    });
+  });
+
+  // Smooth nav highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 200) current = sec.id;
+    });
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === '#' + current
+        ? 'var(--green-bright)' : '';
+    });
+  });
+</script>
+</body>
+</html>
